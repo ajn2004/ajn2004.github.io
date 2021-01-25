@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body oncontextmenu="return false;">
+    <script src="jquery.csv.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+    <h2><u>List of Controls</u><br />
+        w = move forward a = move left s = move backward d = move right, r =reset<br />
+        right click = rotate camera, left click = rotate object
+    </h2>
+
+    <script>
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
+        camera.position.z = 5;
+
+        var renderer = new THREE.WebGLRenderer({andtialias: true});
+        renderer.setClearColor("#e5e5e5");
+        renderer.setSize(window.innerWidth,window.innerHeight);
+
+        document.body.appendChild(renderer.domElement);
+        
+        
+        var molecules=  1000;
+        var circle_size = 10;
+        
+        //adding geometries
+        function readTextFile(file)
+        {
+            var rawFile = new XMLHttpRequest();
+            rawFile.open("GET", file, false);
+            rawFile.onreadystatechange = function ()
+            {
+                if(rawFile.readyState === 4)
+                {
+                    if(rawFile.status === 200 || rawFile.status == 0)
+                    {
+                        var allText = rawFile.responseText;
+                        //alert(allText);
+                    }
+                }
+            }
+            rawFile.send(null);
+            return rawFile.responseText
+        }
+
+        function parse_data(all_text){
+            lines = all_text.split("\n");
+            
+            var length = Object.keys(lines).length;
+            
+            var orange_x = new Array(length);
+            var orange_y = new Array(length);
+            var orange_z = new Array(length);
+            for(i=0; i< length; i++){
+                // parse data to arrays
+                data = lines[i].split(',');
+                
+                orange_x[i] = parseFloat(data[0]);
+                orange_y[i] = parseFloat(data[1]);
+                orange_z[i] = parseFloat(data[2]);
+            }
+            
+            return [orange_x, orange_y, orange_z];
+        }
+        
+        allText = readTextFile("molecules_xyz_orange_correct.txt");
+        [orange_x, orange_y, orange_z] = parse_data(allText)
+        //console.log(orange_z[0])
+
+        var orange_geometry = new THREE.Geometry();
+        for( i=0; i <molecules; i++){
+            //console.log(i)
+        var geometry = new THREE.SphereGeometry( 0.025,circle_size,circle_size);
+        //var material = new THREE.MeshLambertMaterial({color : 0xFFCC00});
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(orange_x[i], orange_y[i], orange_z[i]);
+        mesh.updateMatrix();
+        orange_geometry.merge(mesh.geometry, mesh.matrix);}
+
+
+        var material = new THREE.MeshLambertMaterial({color : 0x2EAB12});
+        var orange_mesh = new THREE.Mesh(orange_geometry, material);
+        scene.add(orange_mesh);
+        
+
+
+        var light = new THREE.PointLight(0xFFFFFF, 1 , 500);
+        light.position.set(10,0,25);
+        scene.add(light)
+
+        renderer.render(scene, camera)
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            camera.aspect = window.innerWidth/window.innerHeight;
+
+            camera.updateProjectionMatrix();
+        })
+
+        // Movement Controls
+        function keyboardMovement(event){
+            // Implement basic WASD controls
+            // The camera is oriented towards the -z' axis
+
+            step_size = 0.05;
+            var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
+            var o = new THREE.Vector3(0,0, -step_size); // original orientation vector for camera
+            
+            
+            if ( event.keyCode == 87){
+                // Moving 'forward'
+                var b = new THREE.Vector3(0, 0, -step_size); // step 'along -zprime'
+                movement = b.applyEuler(a);
+                camera.position.x += movement.x;
+                camera.position.y += movement.y;
+                camera.position.z += movement.z;
+                
+            } else if ( event.keyCode == 83){
+                // Moving 'backward'
+                var b = new THREE.Vector3(0, 0, +step_size); // step 'along -zprime'
+                movement = b.applyEuler(a);
+                camera.position.x += movement.x;
+                camera.position.y += movement.y;
+                camera.position.z += movement.z;
+                
+            } else if ( event.keyCode == 65){
+                // Strafe left
+                var b = new THREE.Vector3(-step_size, 0, 0); // step 'along -zprime'
+                movement = b.applyEuler(a);
+                camera.position.x += movement.x;
+                camera.position.y += movement.y;
+                camera.position.z += movement.z;
+                
+            } else if ( event.keyCode == 68){
+                // Strafe right
+                var b = new THREE.Vector3(step_size, 0, 0); // step 'along -zprime'
+                movement = b.applyEuler(a);
+                camera.position.x += movement.x;
+                camera.position.y += movement.y;
+                camera.position.z += movement.z;
+                
+            } else if ( event.keyCode == 32){
+                // move 'up'
+                var b = new THREE.Vector3(0, step_size, 0); // step 'along -zprime'
+                movement = b.applyEuler(a);
+                camera.position.x += movement.x;
+                camera.position.y += movement.y;
+                camera.position.z += movement.z;
+                
+            } else if ( event.keyCode == 88){
+                // move 'down'
+                var b = new THREE.Vector3(0, -step_size, 0); // step 'along -zprime'
+                movement = b.applyEuler(a);
+                camera.position.x += movement.x;
+                camera.position.y += movement.y;
+                camera.position.z += movement.z;
+                 
+            } else if ( event.keyCode == 81){
+                // look at origin and orient
+               
+                camera.lookAt(0,0,0);
+                disp(camera.rotation)
+                 
+            } else if ( event.keyCode == 82){
+                // reset
+                var b = new THREE.Vector3(0, -step_size, 0); // step 'along -zprime'
+                movement = b.applyEuler(a);
+                camera.position.x = 0;
+                camera.position.y = 0;
+                camera.position.z = 5;
+                camera.rotation.x = 0;
+                camera.rotation.y = 0;
+                camera.rotation.z = 0;
+                orange_mesh.rotation.x = 0;
+                orange_mesh.rotation.y = 0;
+                orange_mesh.rotation.z = 0;
+                 
+            } else{
+                disp(event.keyCode)    
+            }
+        }
+        function mouseAction(event){
+            // Rotational controls
+            mouse_x = event.x;
+            mouse_y = event.y;
+            if (event.button == 2){
+                // Left Click rotates object
+                camera_y = camera.rotation.y;
+                camera_x = camera.rotation.x;
+                window.addEventListener("mousemove", cameraRotation); 
+            } else if (event.button == 0){
+                // Right click rotates camera
+                object_y = orange_mesh.rotation.y;
+                object_x = orange_mesh.rotation.x;
+                window.addEventListener("mousemove", objectRotation);   
+            }
+            
+        }
+        function cameraRotation(event){
+            // handles camera rotation
+            // rotate camera by a difference between  mouse drag
+            camera.rotation.y = camera_y + (mouse_x - event.x)*0.01;
+            camera.rotation.x = camera_x - (mouse_y - event.y)*0.01;
+            //disp(camera.rotation.y);
+        }
+        function objectRotation(event){
+            // handles object rotation
+            // rotate object by a difference between  mouse drag
+            var b = new THREE.Vector3((mouse_y - event.y)*0.01,(mouse_x - event.x)*0.01, 0);
+            var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ'); 
+
+            orange_mesh.rotation.y = object_y + (mouse_x - event.x)*0.01;
+            orange_mesh.rotation.x = object_x + (mouse_y - event.y)*0.01;
+        }
+        function removeMouseUp(event){
+            window.removeEventListener("mousemove",cameraRotation);
+            window.removeEventListener("mousemove",objectRotation);
+        }
+        window.addEventListener("keydown", keyboardMovement);
+        window.addEventListener("mousedown", mouseAction);
+        window.addEventListener("mouseup", removeMouseUp);
+        var render = function(){
+            requestAnimationFrame(render);
+            
+            //orange_mesh.rotation.x += 0.01;
+            renderer.render(scene, camera);
+        }
+        render()
+        
+        function disp(object){
+            console.log(object);
+        }
+        
+    </script>
+</body>
+</html>

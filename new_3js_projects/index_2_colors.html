@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <script src="jquery.csv.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+    <script>
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
+        camera.position.z = 5;
+
+        var renderer = new THREE.WebGLRenderer({andtialias: true});
+        renderer.setClearColor("#e5e5e5");
+        renderer.setSize(window.innerWidth,window.innerHeight);
+
+        document.body.appendChild(renderer.domElement);
+        
+        
+        var molecules=  1000;
+        var circle_size = 5;
+        
+        //adding geometries
+        function readTextFile(file)
+        {
+            var rawFile = new XMLHttpRequest();
+            rawFile.open("GET", file, false);
+            rawFile.onreadystatechange = function ()
+            {
+                if(rawFile.readyState === 4)
+                {
+                    if(rawFile.status === 200 || rawFile.status == 0)
+                    {
+                        var allText = rawFile.responseText;
+                        //alert(allText);
+                    }
+                }
+            }
+            rawFile.send(null);
+            return rawFile.responseText
+        }
+
+        function parse_data(all_text){
+            lines = all_text.split("\n");
+            
+            var length = Object.keys(lines).length;
+            
+            var orange_x = new Array(length);
+            var orange_y = new Array(length);
+            var orange_z = new Array(length);
+            for(i=0; i< length; i++){
+                // parse data to arrays
+                data = lines[i].split(',');
+                
+                orange_x[i] = parseFloat(data[0]);
+                orange_y[i] = parseFloat(data[1]);
+                orange_z[i] = parseFloat(data[2]);
+            }
+            
+            return [orange_x, orange_y, orange_z];
+        }
+        
+        allText = readTextFile("vglut_gpi_xyz_orange.txt");
+        [orange_x, orange_y, orange_z] = parse_data(allText)
+        //console.log(orange_z[0])
+
+        var orange_geometry = new THREE.Geometry();
+        for( i=0; i <molecules; i++){
+            //console.log(i)
+        var geometry = new THREE.SphereGeometry( 0.05,circle_size,circle_size);
+        //var material = new THREE.MeshLambertMaterial({color : 0xFFCC00});
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(orange_x[i], orange_y[i], orange_z[i]);
+        mesh.updateMatrix();
+        orange_geometry.merge(mesh.geometry, mesh.matrix);}
+
+
+        var material = new THREE.MeshLambertMaterial({color : 0x2EAB12});
+        var orange_mesh = new THREE.Mesh(orange_geometry, material);
+        scene.add(orange_mesh);
+        allText = readTextFile("vglut_gpi_xyz_red.txt");
+        [red_x, red_y, red_z] = parse_data(allText)
+        
+        var red_geometry = new THREE.Geometry();
+        for( i=0; i <molecules; i++){
+            //console.log(i)
+        var geometry = new THREE.SphereGeometry( 0.05,circle_size,circle_size);
+        //var material = new THREE.MeshLambertMaterial({color : 0xFFCC00});
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(red_x[i], red_y[i], red_z[i]);
+        mesh.updateMatrix();
+        red_geometry.merge(mesh.geometry, mesh.matrix);}
+        
+
+        var material = new THREE.MeshLambertMaterial({color : 0xD01111});
+        var red_mesh = new THREE.Mesh(red_geometry, material);
+        scene.add(red_mesh)
+
+
+        var light = new THREE.PointLight(0xFFFFFF, 1 , 500);
+        light.position.set(10,0,25);
+        scene.add(light)
+
+        renderer.render(scene, camera)
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            camera.aspect = window.innerWidth/window.innerHeight;
+
+            camera.updateProjectionMatrix();
+        })
+
+        
+
+        var render = function(){
+            requestAnimationFrame(render);
+            red_mesh.rotation.x += 0.01;
+            orange_mesh.rotation.x += 0.01;
+            renderer.render(scene, camera);
+        }
+        render()
+        
+        
+    </script>
+</body>
+</html>
