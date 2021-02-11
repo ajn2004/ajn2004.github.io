@@ -141,9 +141,9 @@ function parse_data(all_text){
                 window.addEventListener("mousemove", cameraRotation); 
             } else if (event.button == 0){
                 // Right click rotates camera
-                object_y = final_mesh.rotation.y;
-                object_x = final_mesh.rotation.x;
-                object_z = final_mesh.rotation.z;
+                object_y = red_mesh.rotation.y;
+                object_x = red_mesh.rotation.x;
+                object_z = red_mesh.rotation.z;
                 window.addEventListener("mousemove", objectRotation);   
             }
             
@@ -158,24 +158,19 @@ function parse_data(all_text){
         function objectRotation(event){
             // handles object rotation
             // rotate object by a difference between  mouse drag
-            var b = new THREE.Vector3(0 , (mouse_x - event.x)*0.01 , (mouse_y - event.y)*0.01);
-            // Now we want to determine how to rotate along the y_prime and z_prime axes
-            // The prime frame is the on where the x-axis runs from the origin to the camera, and the y-axis sits in the object's x-y plane
-            // spherical coords inform our choices of axes
-            var radial = Math.sqrt(camera.position.x*camera.position.x+ camera.position.y*camera.position.y + camera.position.z*camera.position.z);
-            var phi = Math.acos(camera.position.z/radial); 
-            // to get to the prime frame from the object frame, we will rotate theta in z followed by phi rotation in y_prime
-            var theta = Math.atan2(camera.position.y,camera.position.x);
+            var b = new THREE.Vector3((mouse_y - event.y)*0.01 ,(mouse_x - event.x)*0.01,   0);
+           
+            var rotation = b;
+            red_mesh.rotation.x = object_x - rotation.x;
+            red_mesh.rotation.y = object_y - rotation.y;
+            red_mesh.rotation.z = object_z - rotation.z;
+
+            orange_mesh.rotation.x = object_x - rotation.x;
+            orange_mesh.rotation.y = object_y - rotation.y;
+            orange_mesh.rotation.z = object_z - rotation.z;
             
-            var a = new THREE.Euler(0 ,-phi, -theta, 'ZYX')
-            var rotation = b.applyEuler(a);
-            orange_mesh.rotation.x = object_x + rotation.x;
-            orange_mesh.rotation.y = object_y + rotation.y;
-            orange_mesh.rotation.z = object_z + rotation.z;
-            /*
-            orange_mesh.rotation.y = object_y + (mouse_x - event.x)*0.01;
-            orange_mesh.rotation.x = object_x + (mouse_y - event.y)*0.01;
-            */
+            
+           
         }
         function removeMouseUp(event){
             window.removeEventListener("mousemove",cameraRotation);
