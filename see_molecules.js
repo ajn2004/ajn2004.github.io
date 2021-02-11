@@ -122,6 +122,14 @@ function parse_data(all_text){
                 disp(event.keyCode)    
             }
         }
+        function camera_reset(){
+            camera.position.x = 0;
+                camera.position.y = 0;
+                camera.position.z = 10;
+                camera.rotation.x = 0;
+                camera.rotation.y = 0;
+                camera.rotation.z = 0;
+        }
         function mouseAction(event){
             // Rotational controls
             mouse_x = event.x;
