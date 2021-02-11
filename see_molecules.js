@@ -117,6 +117,10 @@ function parse_data(all_text){
                 orange_mesh.rotation.x = 0;
                 orange_mesh.rotation.y = 0;
                 orange_mesh.rotation.z = 0;
+                red_mesh.rotation.x = 0;
+                red_mesh.rotation.y = 0;
+                red_mesh.rotation.z = 0;
+
                  
             } else{
                 disp(event.keyCode)    
