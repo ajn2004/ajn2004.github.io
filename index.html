@@ -10,91 +10,124 @@
     <script src="jquery.csv.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+    <script src="see_molecules.js"></script>
     <h2><u>List of Controls</u><br />
         w = move forward a = move left s = move backward d = move right, r =reset<br />
-        right click = rotate camera, left click = rotate object
+        right click = rotate camera, <del>left click = rotate object</del>
     </h2>
-
+    
+    <button type="button" onclick="load_dataset_1()">Load Dataset 1</button>
+    <button type="button" onclick="load_dataset_2()">Load Dataset 2</button>
+    <button type="button" onclick="load_dataset_3()">Load Dataset 3</button>
+    <button type="button" onclick="load_dataset_4()">Load Dataset 4</button>
+    <button type="button" onclick="load_dataset_drift()">Load Drift Dataset</button>
+    <h2>
+        <span id="title"></span>
+    </h2>
+    <h2>
+        Red molecules are gpi and 40 nm in diameter, Orange molecules are vGlut and 50nm in diameter
+    </h2>
     <script>
 
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
-        camera.position.z = 5;
+        camera.position.z = 10;
 
         var renderer = new THREE.WebGLRenderer({andtialias: true});
-        renderer.setClearColor("#e5e5e5");
+        renderer.setClearColor("#00000");
         renderer.setSize(window.innerWidth,window.innerHeight);
 
         document.body.appendChild(renderer.domElement);
-        
-        
-        var molecules=  1000;
-        var circle_size = 10;
-        
-        //adding geometries
-        function readTextFile(file)
-        {
-            var rawFile = new XMLHttpRequest();
-            rawFile.open("GET", file, false);
-            rawFile.onreadystatechange = function ()
-            {
-                if(rawFile.readyState === 4)
-                {
-                    if(rawFile.status === 200 || rawFile.status == 0)
-                    {
-                        var allText = rawFile.responseText;
-                        //alert(allText);
-                    }
-                }
-            }
-            rawFile.send(null);
-            return rawFile.responseText
-        }
-
-        function parse_data(all_text){
-            lines = all_text.split("\n");
-            
-            var length = Object.keys(lines).length;
-            
-            var orange_x = new Array(length);
-            var orange_y = new Array(length);
-            var orange_z = new Array(length);
-            for(i=0; i< length; i++){
-                // parse data to arrays
-                data = lines[i].split(',');
-                
-                orange_x[i] = parseFloat(data[0]);
-                orange_y[i] = parseFloat(data[1]);
-                orange_z[i] = parseFloat(data[2]);
-            }
-            
-            return [orange_x, orange_y, orange_z];
-        }
-        
-        allText = readTextFile("molecules_xyz_orange_correct.txt");
-        [orange_x, orange_y, orange_z] = parse_data(allText)
-        //console.log(orange_z[0])
-
-        var orange_geometry = new THREE.Geometry();
-        for( i=0; i <molecules; i++){
-            //console.log(i)
-        var geometry = new THREE.SphereGeometry( 0.025,circle_size,circle_size);
-        //var material = new THREE.MeshLambertMaterial({color : 0xFFCC00});
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(orange_x[i], orange_y[i], orange_z[i]);
-        mesh.updateMatrix();
-        orange_geometry.merge(mesh.geometry, mesh.matrix);}
-
-
-        var material = new THREE.MeshLambertMaterial({color : 0x2EAB12});
-        var orange_mesh = new THREE.Mesh(orange_geometry, material);
-        scene.add(orange_mesh);
-        
-
-
+        load_dataset_1()
+        document.getElementById('title').innerHTML = 'Non-Stimulated Neuron';
         var light = new THREE.PointLight(0xFFFFFF, 1 , 500);
         light.position.set(10,0,25);
         scene.add(light)
+        
+
+        var circle_size = 6;
+
+        function load_dataset_1(){
+            clear_scene();
+            document.getElementById('title').innerHTML = 'Non-Stimulated Neuron';
+            build_new_scene("1_red.txt",1)
+            build_new_scene("1_orange.txt",2)
+            scene.add(light);
+        }
+        function load_dataset_2(){
+            clear_scene();
+            document.getElementById('title').innerHTML = 'Stimulated Neuron';
+            build_new_scene("2_red.txt",1)
+            build_new_scene("2_orange.txt",2)
+            scene.add(light);
+        }
+        function load_dataset_3(){
+            clear_scene();
+            document.getElementById('title').innerHTML = 'Stimulated Neuron';
+            build_new_scene("3_red.txt",1)
+            build_new_scene("3_orange.txt",2)
+            scene.add(light);
+        }
+        function load_dataset_4(){
+            clear_scene();
+            document.getElementById('title').innerHTML = 'Stimulated Neuron';
+            build_new_scene("4_red.txt",1)
+            build_new_scene("4_orange.txt",2)
+            scene.add(light);
+        }
+        function load_dataset_drift(){
+            clear_scene();
+            document.getElementById('title').innerHTML = 'Example of Drift in early sets';
+            build_new_scene("drift_red.txt",1)
+            build_new_scene("drift_orange.txt",2)
+            scene.add(light);
+        }
+        function clear_scene(){
+            while(scene.children.length >0){
+            // clear the scene
+                scene.remove(scene.children[0]);
+            }
+        }
+        function build_new_scene(stringName,color)
+        {
+            Text = readTextFile(stringName);
+            [x, y, z] = parse_data(Text);
+            if (color == 1){
+                // Red color
+                red_mesh = build_new_geometry(x, y, z,0.02);
+                scene.add(red_mesh)
+            }else{
+                // orange color
+                orange_mesh = build_new_geometry(x, y, z,0.025);
+                scene.add(orange_mesh)
+            }
+            
+            
+            
+        }
+        function build_new_geometry(x,y,z, radius)
+        {// function to build a geomtry and return the mesh
+            var final_geometry = new THREE.Geometry();
+            
+            for (i=0; i<x.length; i++)
+            {// loop over all molecules and add them to the geometry
+                var geometry = new THREE.SphereGeometry( radius,circle_size,circle_size);
+            //var material = new THREE.MeshLambertMaterial({color : 0xFFCC00});
+            var mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(x[i], y[i], z[i]);
+            mesh.updateMatrix();
+            final_geometry.merge(mesh.geometry, mesh.matrix);
+            }
+            if(radius == 0.025){// 0.025 is radius of a vesicle meaning orange
+                var material = new THREE.MeshLambertMaterial({color : 0xc6ff00});
+                return new THREE.Mesh(final_geometry, material)
+            }else{
+                var material = new THREE.MeshLambertMaterial({color : 0xff2b00});
+                return new THREE.Mesh(final_geometry, material)
+            }
+        }
+        
+        
 
         renderer.render(scene, camera)
         window.addEventListener('resize', () => {
@@ -104,142 +137,7 @@
             camera.updateProjectionMatrix();
         })
 
-        // Movement Controls
-        function keyboardMovement(event){
-            // Implement basic WASD controls
-            // The camera is oriented towards the -z' axis
 
-            step_size = 0.05;
-            var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
-            var o = new THREE.Vector3(0,0, -step_size); // original orientation vector for camera
-            
-            
-            if ( event.keyCode == 87){
-                // Moving 'forward'
-                var b = new THREE.Vector3(0, 0, -step_size); // step 'along -zprime'
-                movement = b.applyEuler(a);
-                camera.position.x += movement.x;
-                camera.position.y += movement.y;
-                camera.position.z += movement.z;
-                
-            } else if ( event.keyCode == 83){
-                // Moving 'backward'
-                var b = new THREE.Vector3(0, 0, +step_size); // step 'along -zprime'
-                movement = b.applyEuler(a);
-                camera.position.x += movement.x;
-                camera.position.y += movement.y;
-                camera.position.z += movement.z;
-                
-            } else if ( event.keyCode == 65){
-                // Strafe left
-                var b = new THREE.Vector3(-step_size, 0, 0); // step 'along -zprime'
-                movement = b.applyEuler(a);
-                camera.position.x += movement.x;
-                camera.position.y += movement.y;
-                camera.position.z += movement.z;
-                
-            } else if ( event.keyCode == 68){
-                // Strafe right
-                var b = new THREE.Vector3(step_size, 0, 0); // step 'along -zprime'
-                movement = b.applyEuler(a);
-                camera.position.x += movement.x;
-                camera.position.y += movement.y;
-                camera.position.z += movement.z;
-                
-            } else if ( event.keyCode == 32){
-                // move 'up'
-                var b = new THREE.Vector3(0, step_size, 0); // step 'along -zprime'
-                movement = b.applyEuler(a);
-                camera.position.x += movement.x;
-                camera.position.y += movement.y;
-                camera.position.z += movement.z;
-                
-            } else if ( event.keyCode == 88){
-                // move 'down'
-                var b = new THREE.Vector3(0, -step_size, 0); // step 'along -zprime'
-                movement = b.applyEuler(a);
-                camera.position.x += movement.x;
-                camera.position.y += movement.y;
-                camera.position.z += movement.z;
-                 
-            } else if ( event.keyCode == 81){
-                // look at origin and orient
-               
-                camera.lookAt(0,0,0);
-                disp(camera.rotation)
-                 
-            } else if ( event.keyCode == 82){
-                // reset
-                var b = new THREE.Vector3(0, -step_size, 0); // step 'along -zprime'
-                movement = b.applyEuler(a);
-                camera.position.x = 0;
-                camera.position.y = 5;
-                camera.position.z = 0;
-                camera.rotation.x = Math.PI/2;
-                camera.rotation.y = Math.PI;
-                camera.rotation.z = 0;
-                orange_mesh.rotation.x = 0;
-                orange_mesh.rotation.y = 0;
-                orange_mesh.rotation.z = 0;
-                 
-            } else{
-                disp(event.keyCode)    
-            }
-        }
-        function mouseAction(event){
-            // Rotational controls
-            mouse_x = event.x;
-            mouse_y = event.y;
-            if (event.button == 2){
-                // Left Click rotates object
-                camera_y = camera.rotation.y;
-                camera_x = camera.rotation.x;
-                window.addEventListener("mousemove", cameraRotation); 
-            } else if (event.button == 0){
-                // Right click rotates camera
-                object_y = orange_mesh.rotation.y;
-                object_x = orange_mesh.rotation.x;
-                object_z = orange_mesh.rotation.z;
-                window.addEventListener("mousemove", objectRotation);   
-            }
-            
-        }
-        function cameraRotation(event){
-            // handles camera rotation
-            // rotate camera by a difference between  mouse drag
-            camera.rotation.y = camera_y + (mouse_x - event.x)*0.01;
-            camera.rotation.x = camera_x - (mouse_y - event.y)*0.01;
-           
-        }
-        function objectRotation(event){
-            // handles object rotation
-            // rotate object by a difference between  mouse drag
-            var b = new THREE.Vector3(0 , (mouse_x - event.x)*0.01 , (mouse_y - event.y)*0.01);
-            // Now we want to determine how to rotate along the y_prime and z_prime axes
-            // The prime frame is the on where the x-axis runs from the origin to the camera, and the y-axis sits in the object's x-y plane
-            // spherical coords inform our choices of axes
-            var radial = Math.sqrt(camera.position.x*camera.position.x+ camera.position.y*camera.position.y + camera.position.z*camera.position.z);
-            var phi = Math.acos(camera.position.z/radial); 
-            // to get to the prime frame from the object frame, we will rotate theta in z followed by phi rotation in y_prime
-            var theta = Math.atan2(camera.position.y,camera.position.x);
-            
-            var a = new THREE.Euler(0 ,-phi, -theta, 'ZYX')
-            var rotation = b.applyEuler(a);
-            orange_mesh.rotation.x = object_x + rotation.x;
-            orange_mesh.rotation.y = object_y + rotation.y;
-            orange_mesh.rotation.z = object_z + rotation.z;
-            /*
-            orange_mesh.rotation.y = object_y + (mouse_x - event.x)*0.01;
-            orange_mesh.rotation.x = object_x + (mouse_y - event.y)*0.01;
-            */
-        }
-        function removeMouseUp(event){
-            window.removeEventListener("mousemove",cameraRotation);
-            window.removeEventListener("mousemove",objectRotation);
-        }
-        window.addEventListener("keydown", keyboardMovement);
-        window.addEventListener("mousedown", mouseAction);
-        window.addEventListener("mouseup", removeMouseUp);
         var render = function(){
             requestAnimationFrame(render);
             
