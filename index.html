@@ -73,6 +73,7 @@
             document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
             build_new_scene("2_red.txt",1)
             build_new_scene("2_orange.txt",2)
+            build_scale();
             scene.add(light);
         }
         function load_dataset_3(){
@@ -82,6 +83,7 @@
             document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
             build_new_scene("3_red.txt",1)
             build_new_scene("3_orange.txt",2)
+            build_scale();
             scene.add(light);
         }
         function load_dataset_4(){
@@ -91,6 +93,7 @@
             document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
             build_new_scene("4_red.txt",1)
             build_new_scene("4_orange.txt",2)
+            build_scale();
             scene.add(light);
         }
         function load_dataset_drift(){
@@ -100,6 +103,7 @@
             document.getElementById('description').innerHTML = 'This is an example of a neuron with much drift, sitting in Tyrodes(with glucose) and no stimulation';
             build_new_scene("drift_red.txt",1)
             build_new_scene("drift_orange.txt",2)
+            build_scale();
             scene.add(light);
         }
         function clear_scene(){
