@@ -176,6 +176,23 @@ function parse_data(all_text){
             
            
         }
+        function objectTranslation(event){
+            // handles object rotation
+            // rotate object by a difference between  mouse drag
+            var b = new THREE.Vector3((mouse_y - event.y)*0.01 ,(mouse_x - event.x)*0.01,   0);
+           
+            var rotation = b;
+            red_mesh.rotation.x = object_x - rotation.x;
+            red_mesh.rotation.y = object_y - rotation.y;
+            red_mesh.rotation.z = object_z - rotation.z;
+
+            orange_mesh.rotation.x = object_x - rotation.x;
+            orange_mesh.rotation.y = object_y - rotation.y;
+            orange_mesh.rotation.z = object_z - rotation.z;
+            
+            
+           
+        }
         function removeMouseUp(event){
             window.removeEventListener("mousemove",cameraRotation);
             window.removeEventListener("mousemove",objectRotation);

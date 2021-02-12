@@ -42,9 +42,9 @@
         var renderer = new THREE.WebGLRenderer({andtialias: true});
         renderer.setClearColor("#00000");
         renderer.setSize(window.innerWidth,window.innerHeight);
-
+        load_dataset_1();
         document.body.appendChild(renderer.domElement);
-        load_dataset_1()
+        
         document.getElementById('title').innerHTML = 'Non-Stimulated Neuron';
         var light = new THREE.PointLight(0xFFFFFF, 1 , 500);
         light.position.set(10,0,25);
@@ -54,12 +54,16 @@
         var circle_size = 6;
 
         function load_dataset_1(){
+
+            var quick_description = 'This is an example of a neuron without much drift, sitting in Tyrodes(with glucose) and no stimulation'
             clear_scene();
             camera_reset();
             document.getElementById('title').innerHTML = 'Non-Stimulated Neuron';
-            document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with glucose) and no stimulation';
-            build_new_scene("1_red.txt",1)
-            build_new_scene("1_orange.txt",2)
+            document.getElementById('description').innerHTML = quick_description;
+            build_new_scene("1_red.txt",1);
+            build_new_scene("1_orange.txt",2);
+            
+            build_scale();
             scene.add(light);
         }
         function load_dataset_2(){
@@ -117,10 +121,22 @@
                 orange_mesh = build_new_geometry(x, y, z,0.025);
                 scene.add(orange_mesh)
             }
+        }    
+        function build_scale(){
+            // build a 3D cross of unit length centered at the origin
+            var x_dash = new THREE.BoxGeometry(1,0.01, 0.01);
+            var y_dash = new THREE.BoxGeometry(0.01, 1, 0.01);
+            var z_dash = new THREE.BoxGeometry(0.01, 0.01, 1);
+            var material = new THREE.MeshLambertMaterial( {color: 0xffffff} );
+            var dash = new THREE.Mesh( x_dash, material);
+            scene.add( dash);
+            var dash = new THREE.Mesh( y_dash, material);
+            scene.add( dash);
+            var dash = new THREE.Mesh( z_dash, material);
+            scene.add( dash);
             
+        }   
             
-            
-        }
         function build_new_geometry(x,y,z, radius)
         {// function to build a geomtry and return the mesh
             var final_geometry = new THREE.Geometry();
