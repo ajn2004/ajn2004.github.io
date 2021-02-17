@@ -9,6 +9,7 @@
 <body oncontextmenu="return false;">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="see_molecules.js"></script>
     <h2><u>List of Controls</u><br />
         w = move forward a = move left s = move backward d = move right, r =reset<br />
@@ -21,11 +22,10 @@
     <button type="button" onclick="load_dataset_4()">Load Dataset 4</button>
     <button type="button" onclick="load_dataset_drift()">Load Drift Dataset</button>
     <h2>
-    </h2>
-    
     <button type="button" onclick="toggle_red()"><span id="red_button_text"></span></button>
     <button type="button" onclick="toggle_orange()"><span id="orange_button_text"></span></button>
     <button type="button" onclick="show_both_colors()">Show Both Colors</button>
+    </h2>
     <h2>
         Red molecules are gpi and 40 nm in diameter, Orange molecules are vGlut and 50nm in diameter
     </h2>
@@ -40,6 +40,13 @@
     <h3>Exposure time: 10 ms/frame; Frames: 10000;</h3>
     <script>
 
+        // testing python funcationality
+        //runPython()
+        /*const fileSelector = document.getElementById("file")
+        
+        fileSelector.addEventListener('change',(e) =>{
+        disp(e.target.files);
+        })*/
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
         camera.position.z = 10;
@@ -127,9 +134,11 @@
         }    
         function build_scale(){
             // build a 3D cross of unit length centered at the origin
-            var x_dash = new THREE.BoxGeometry(1,0.01, 0.01);
-            var y_dash = new THREE.BoxGeometry(0.01, 1, 0.01);
-            var z_dash = new THREE.BoxGeometry(0.01, 0.01, 1);
+            on_axis = 1; // 1 micron length
+            off_axis = 0.05 // 'thickness'
+            var x_dash = new THREE.BoxGeometry(on_axis,off_axis, off_axis);
+            var y_dash = new THREE.BoxGeometry(off_axis, on_axis, off_axis);
+            var z_dash = new THREE.BoxGeometry(off_axis, off_axis, on_axis);
             var material = new THREE.MeshLambertMaterial( {color: 0xffffff} );
             var dash = new THREE.Mesh( x_dash, material);
             scene.add( dash);
