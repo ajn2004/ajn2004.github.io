@@ -23,9 +23,9 @@
     <h2>
     </h2>
     
-    <button type="button" onclick="show_red_only()">Red Only</button>
-    <button type="button" onclick="show_orange_only()">Orange Only</button>
-    <button type="button" onclick="show_both_colors()">Both Colors</button>
+    <button type="button" onclick="toggle_red()"><span id="red_button_text"></span></button>
+    <button type="button" onclick="toggle_orange()"><span id="orange_button_text"></span></button>
+    <button type="button" onclick="show_both_colors()">Show Both Colors</button>
     <h2>
         Red molecules are gpi and 40 nm in diameter, Orange molecules are vGlut and 50nm in diameter
     </h2>
@@ -55,11 +55,13 @@
         light.position.set(10,0,25);
         scene.add(light)
         load_dataset_1();
-
+        document.getElementById('red_button_text').innerHTML = 'Hide Red Localizations';
+        document.getElementById('orange_button_text').innerHTML = 'Hide Orange Localizations';
         var circle_size = 6;
-
+        // Toggling variables for multi-color display (used in showing 1 color at a time)
+        var red_on = 1;
+        var orange_on = 1;
         function load_dataset_1(){
-
             var quick_description = 'This is an example of a neuron without much drift, sitting in Tyrodes(with glucose) and no stimulation'
             clear_scene();
             camera_reset();
@@ -67,10 +69,6 @@
             document.getElementById('description').innerHTML = quick_description;
             build_new_scene("1_red.txt",1);
             build_new_scene("1_orange.txt",2);
-            
-            build_scale();
-            disp(light)
-            scene.add(light);
         }
         function load_dataset_2(){
             clear_scene();
@@ -80,8 +78,6 @@
             document.getElementById('description').innerHTML = quick_description;
             build_new_scene("2_red.txt",1)
             build_new_scene("2_orange.txt",2)
-            build_scale();
-            scene.add(light);
         }
         function load_dataset_3(){
             clear_scene();
@@ -90,8 +86,6 @@
             document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
             build_new_scene("3_red.txt",1)
             build_new_scene("3_orange.txt",2)
-            build_scale();
-            scene.add(light);
         }
         function load_dataset_4(){
             clear_scene();
@@ -100,8 +94,6 @@
             document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
             build_new_scene("4_red.txt",1)
             build_new_scene("4_orange.txt",2)
-            build_scale();
-            scene.add(light);
         }
         function load_dataset_drift(){
             clear_scene();
@@ -110,14 +102,14 @@
             document.getElementById('description').innerHTML = 'This is an example of a neuron with much drift, sitting in Tyrodes(with glucose) and no stimulation';
             build_new_scene("drift_red.txt",1)
             build_new_scene("drift_orange.txt",2)
-            build_scale();
-            scene.add(light);
         }
         function clear_scene(){
             while(scene.children.length >0){
             // clear the scene
                 scene.remove(scene.children[0]);
             }
+            scene.add(light);
+            build_scale();
         }
         function build_new_scene(stringName,color)
         {

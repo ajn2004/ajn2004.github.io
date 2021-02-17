@@ -17,25 +17,42 @@ function readTextFile(file)
     return rawFile.responseText
 }
 
-function show_red_only(){
+function toggle_red(){
     // write the code to display red localizations only
-    // clear the scene, add the red mesh and a light to the scene
-    clear_scene();
-    scene.add(light);
+    // This is accomplished simply by removing and adding loaded meshes to the scene
+    if (red_on == 0){
     scene.add(red_mesh);
+    red_on = 1;
+    document.getElementById('red_button_text').innerHTML = 'Hide Red Localizations';
+    }else{
+        red_on = 0
+        scene.remove(red_mesh);
+        document.getElementById('red_button_text').innerHTML = 'Show Red Localizations';
+    }
+
 }
-function show_orange_only(){
+function toggle_orange(){
     // write the code to display orange localizations only
-    clear_scene();
-    scene.add(light);
+    
+    if (orange_on == 0){
     scene.add(orange_mesh);
+    orange_on = 1;
+    document.getElementById('orange_button_text').innerHTML = 'Hide Orange Localizations';
+    }else{
+        orange_on = 0
+        scene.remove(orange_mesh);
+        document.getElementById('orange_button_text').innerHTML = 'Show Orange Localizations';
+    }
 }
 function show_both_colors(){
-    // write the code to display both colors
+    // just reset everything by clearing scene and adding both meshes
     clear_scene();
-    scene.add(light);
     scene.add(red_mesh);
     scene.add(orange_mesh);
+    orange_on = 1;
+    document.getElementById('orange_button_text').innerHTML = 'Hide Orange Localizations';
+    red_on = 1;
+    document.getElementById('red_button_text').innerHTML = 'Hide Red Localizations';
 }
 
 
