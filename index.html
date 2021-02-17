@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body oncontextmenu="return false;">
-    <script src="jquery.csv.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
     <script src="see_molecules.js"></script>
@@ -21,6 +20,12 @@
     <button type="button" onclick="load_dataset_3()">Load Dataset 3</button>
     <button type="button" onclick="load_dataset_4()">Load Dataset 4</button>
     <button type="button" onclick="load_dataset_drift()">Load Drift Dataset</button>
+    <h2>
+    </h2>
+    
+    <button type="button" onclick="show_red_only()">Red Only</button>
+    <button type="button" onclick="show_orange_only()">Orange Only</button>
+    <button type="button" onclick="show_both_colors()">Both Colors</button>
     <h2>
         Red molecules are gpi and 40 nm in diameter, Orange molecules are vGlut and 50nm in diameter
     </h2>
@@ -42,14 +47,14 @@
         var renderer = new THREE.WebGLRenderer({andtialias: true});
         renderer.setClearColor("#00000");
         renderer.setSize(window.innerWidth,window.innerHeight);
-        load_dataset_1();
+        
         document.body.appendChild(renderer.domElement);
         
         document.getElementById('title').innerHTML = 'Non-Stimulated Neuron';
         var light = new THREE.PointLight(0xFFFFFF, 1 , 500);
         light.position.set(10,0,25);
         scene.add(light)
-        
+        load_dataset_1();
 
         var circle_size = 6;
 
@@ -64,13 +69,15 @@
             build_new_scene("1_orange.txt",2);
             
             build_scale();
+            disp(light)
             scene.add(light);
         }
         function load_dataset_2(){
             clear_scene();
             camera_reset();
+            var quick_description = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
             document.getElementById('title').innerHTML = 'Stimulated Neuron';
-            document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
+            document.getElementById('description').innerHTML = quick_description;
             build_new_scene("2_red.txt",1)
             build_new_scene("2_orange.txt",2)
             build_scale();

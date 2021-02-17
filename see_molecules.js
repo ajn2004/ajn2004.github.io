@@ -17,9 +17,29 @@ function readTextFile(file)
     return rawFile.responseText
 }
 
-function test_threes(){
-    
+function show_red_only(){
+    // write the code to display red localizations only
+    // clear the scene, add the red mesh and a light to the scene
+    clear_scene();
+    scene.add(light);
+    scene.add(red_mesh);
 }
+function show_orange_only(){
+    // write the code to display orange localizations only
+    clear_scene();
+    scene.add(light);
+    scene.add(orange_mesh);
+}
+function show_both_colors(){
+    // write the code to display both colors
+    clear_scene();
+    scene.add(light);
+    scene.add(red_mesh);
+    scene.add(orange_mesh);
+}
+
+
+
 function parse_data(all_text){
     lines = all_text.split("\n");
     
