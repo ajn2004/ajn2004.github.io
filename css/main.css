@@ -1,6 +1,6 @@
 body { 
     margin: 0; 
-    height: 100vh;
+    height: 100%;
 }
   
 canvas { 
@@ -20,40 +20,103 @@ h1 {
     padding: .2em;
   }
 
+  #controls{
+    position: absolute;
+    color: white;
+    top: 5%;
+    width: 100%;
+    text-align: left;
+    left: 1%;
+    z-index: 100;
+    display: block;
+  }
+
+  #toggles{
+    position: absolute;
+    color: white;
+    top: 2.5%;
+    width: 100%;
+    text-align: left;
+    left: 10px;
+    z-index: 100;
+    display: block;
+  }
+
+  #describe{
+    position: absolute;
+    color: white;
+    top: 2.5%;
+    width: 20%;
+    text-align: left;
+    right: 1%;
+    z-index: 100;
+    display: block;
+  }
+
+  #cell-title{
+    position: absolute;
+    color: white;
+    top: 2.5%;
+    font-size: 25px;
+    width: 100%;
+    text-align: center;
+    
+    z-index: 100;
+    display: block;
+  }
+
+  #file_load{
+    position: absolute;
+    color: white;
+    bottom: 1.5%;
+    font-size: 20px;
+    
+    right: 2%;
+    z-index: 100;
+  }
+
+  #legend{
+    position: absolute;
+    color: white;
+    top: 10%;
+    font-size: 25px;
+    width: 100%;
+    text-align: left;
+    left: 85%;
+    z-index: 100;
+    display: block;
+  }
+
+  #example-buttons{
+    position: absolute;
+    color: white;
+    left: 1%;
+    bottom: 1%;
+    width: 100%;
+    
+    text-align: left;
+    z-index: 100;
+    display: block;
+  }
   #drop-area {
-    border: 2px dashed #ccc;
-    border-radius: 20px;
-    width: 240px;
-    font-family: sans-serif;
-    margin: 10px auto;
-    padding: 10px;
+    
+    position:absolute;
+    width: 99.5%;
+    height: 99.5%;
+    z-index: 100;
+ 
   }
   #drop-area.highlight {
     border-color: purple;
   }
   p {
-    margin-top: 0;
+    margin-top: 10px;
+    margin-left: 10px;
   }
   .my-form {
     margin-bottom: 10px;
   }
-  #gallery {
-    margin-top: 10px;
-  }
-  #gallery img {
-    width: 150px;
-    margin-bottom: 10px;
-    margin-right: 10px;
-    vertical-align: middle;
-  }
-  .button {
-    display: inline-block;
-    padding: 10px;
-    background: #ccc;
-    cursor: pointer;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
+  
   .button:hover {
     background: #ddd;
   }

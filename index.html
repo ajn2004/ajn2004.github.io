@@ -11,47 +11,48 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
     <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="see_molecules.js"></script>
-    <h2><u>File Loading</u></h2>
+    
     <div id="drop-area" ondrop = "handleDrop(event)">
-        <form class="my-form">
-          <p>Upload a localization dataset with the file dialog or by dragging and dropping into the dashed region</p>
-          <input type="file" id="fileElem" onchange="uploadFile(this.file)">
-          <label class="button" for="fileElem">Select a file</label>
-        </form>
+        <input type="file" id="fileElem" onchange="uploadFile(this.file)">
       </div>
 
-    <h2><u>List of Controls</u><br />
-        w = move forward a = move left s = move backward d = move right, r =reset<br />
-        right click = rotate camera, left click = rotate object
-    </h2>
+    <div id = 'controls'><p><u>Controls</u><br />
+        w = move forward<br /> a = move left<br /> s = move backward<br /> d = move right<br /> r =reset<br />
+        right click = rotate camera<br /> left click = rotate object<br /> White cross is 1&mu;m x 1&mu;m x 1&mu;m
+    </p>
+    </div>
     
-
+    <div id='legend'>
+        <u>Legend</u><br/>
+        Red: <span id='red_legend_text'></span><br/>
+        Orange: <span id='orange_legend_text'></span>
+    </div>
       
 
-    <h2>
-    <button type="button" onclick="load_dataset_1()">Load Dataset 1</button>
-    <button type="button" onclick="load_dataset_2()">Load Dataset 2</button>
-    <button type="button" onclick="load_dataset_3()">Load Dataset 3</button>
-    <button type="button" onclick="load_dataset_4()">Load Dataset 4</button>
-    <button type="button" onclick="load_dataset_drift()">Load Drift Dataset</button>
-    </h2>
-    <h2>
+    <div id = 'example-buttons'>
+    <button type="button" onclick="load_dataset_1()">Load Non-Stim GPI/vGlut</button>
+    <button type="button" onclick="load_dataset_2()">Load Stimulated GPI/vGlut 1</button>
+    <button type="button" onclick="load_dataset_3()">Load Stimulated GPI/vGlut 2</button>
+    <button type="button" onclick="load_dataset_4()">Load Stimulated GPI/vGlut 3</button>
+    </div>
+
+    <div id='toggles'>
     <button type="button" onclick="toggle_red()"><span id="red_button_text"></span></button>
     <button type="button" onclick="toggle_orange()"><span id="orange_button_text"></span></button>
     <button type="button" onclick="show_both_colors()">Show Both Colors</button>
-    </h2>
-    <h2>
-        Red molecules are gpi and 40 nm in diameter, Orange molecules are vGlut and 50nm in diameter
-    </h2>
-    <h2>
+    </div>
+
+    <div id='cell-title'>
         <span id="title"></span> Dataset
-    </h2>
+    </div>
     
-    <h3>
-        <span id="description"><br />
-        
-    </h3>
-    <h3>Exposure time: 10 ms/frame; Frames: 10000;</h3>
+    <div id ='describe'>
+        <u>Info</u><br/>
+        <span id="description"></span>
+    </div>
+
+    <div id ='file_load'>You can load a file by dragging and dropping onto the page</div>
+
     <script>
 
         // testing python funcationality
@@ -89,6 +90,8 @@
             camera_reset();
             document.getElementById('title').innerHTML = 'Non-Stimulated Neuron';
             document.getElementById('description').innerHTML = quick_description;
+            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
+            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
             build_new_scene("1_red.txt",1);
             build_new_scene("1_orange.txt",2);
         }
@@ -98,6 +101,8 @@
             var quick_description = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
             document.getElementById('title').innerHTML = 'Stimulated Neuron';
             document.getElementById('description').innerHTML = quick_description;
+            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
+            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
             build_new_scene("2_red.txt",1)
             build_new_scene("2_orange.txt",2)
         }
@@ -106,6 +111,8 @@
             camera_reset();
             document.getElementById('title').innerHTML = 'Stimulated Neuron';
             document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
+            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
+            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
             build_new_scene("3_red.txt",1)
             build_new_scene("3_orange.txt",2)
         }
@@ -114,6 +121,8 @@
             camera_reset();
             document.getElementById('title').innerHTML = 'Stimulated Neuron';
             document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
+            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
+            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
             build_new_scene("4_red.txt",1)
             build_new_scene("4_orange.txt",2)
         }
@@ -122,6 +131,8 @@
             camera_reset();
             document.getElementById('title').innerHTML = 'Example of Drift in early sets';
             document.getElementById('description').innerHTML = 'This is an example of a neuron with much drift, sitting in Tyrodes(with glucose) and no stimulation';
+            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
+            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
             build_new_scene("drift_red.txt",1)
             build_new_scene("drift_orange.txt",2)
         }

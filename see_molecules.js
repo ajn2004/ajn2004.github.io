@@ -287,22 +287,34 @@ async function uploadFile(file){
     
 }
 
-function parseJSONinput(result){
-    // to access the red x data is results.red.x
-    disp(result.red.x.length)
-    
-    
-}
-
-
 function build_new_json_scene(results){
         // Red color
         red_mesh = build_new_geometry(results.red.x, results.red.y, results.red.z,0.02);
+        try{// try to assign legened information
+            
+            document.getElementById('red_legend_text').innerHTML = results.red.tag;
+        }
+        catch(err){}
         scene.add(red_mesh)
         disp(scene.children)
              // orange color
         orange_mesh = build_new_geometry(results.orange.x, results.orange.y, results.orange.z,0.025);
         scene.add(orange_mesh)
+        try{// try to assign legened information
+            
+            document.getElementById('orange_legend_text').innerHTML = results.orange.tag;
+        }
+        catch(err){}
+        
+        try{// try to assign info
+            
+            document.getElementById('description').innerHTML = results.info;
+        }
+        catch(err){}
+        
+        document.getElementById('title').innerHTML = "";
+        
+        
 } 
 
 function build_new_geometry(x,y,z, radius)
