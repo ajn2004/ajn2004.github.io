@@ -296,7 +296,7 @@ function build_new_json_scene(results){
         }
         catch(err){}
         scene.add(red_mesh)
-        disp(scene.children)
+        
              // orange color
         orange_mesh = build_new_geometry(results.orange.x, results.orange.y, results.orange.z,0.025);
         scene.add(orange_mesh)

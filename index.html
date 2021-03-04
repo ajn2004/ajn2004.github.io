@@ -34,10 +34,10 @@
       
 
     <div id = 'example-buttons'>
-    <button type="button" onclick="load_dataset_1()">Load Non-Stim GPI/vGlut 1</button>
-    <button type="button" onclick="load_dataset_2()">Load Non-Stim GPI/vGlut 2</button>
-    <button type="button" onclick="load_dataset_3()">Load Stimulated GPI/vGlut 1</button>
-    <button type="button" onclick="load_dataset_4()">Load Stimulated GPI/vGlut 2</button>
+    <button type="button" onclick="load_dataset_1()">Resting GPI/vGlut 1</button>
+    <button type="button" onclick="load_dataset_2()">Resting GPI/vGlut 2</button>
+    <button type="button" onclick="load_dataset_3()">Stimulated GPI/vGlut 1</button>
+    <button type="button" onclick="load_dataset_4()">Stimulated GPI/vGlut 2</button>
     </div>
 
     <div id='toggles'>
@@ -112,6 +112,7 @@
             local_json_load("Drift_corrected_with_stim_2.json")
         }
 
+        
         function clear_scene(){
             while(scene.children.length >0){
             // clear the scene
