@@ -34,10 +34,10 @@
       
 
     <div id = 'example-buttons'>
-    <button type="button" onclick="load_dataset_1()">Load Non-Stim GPI/vGlut</button>
-    <button type="button" onclick="load_dataset_2()">Load Stimulated GPI/vGlut 1</button>
-    <button type="button" onclick="load_dataset_3()">Load Stimulated GPI/vGlut 2</button>
-    <button type="button" onclick="load_dataset_4()">Load Stimulated GPI/vGlut 3</button>
+    <button type="button" onclick="load_dataset_1()">Load Non-Stim GPI/vGlut 1</button>
+    <button type="button" onclick="load_dataset_2()">Load Non-Stim GPI/vGlut 2</button>
+    <button type="button" onclick="load_dataset_3()">Load Stimulated GPI/vGlut 1</button>
+    <button type="button" onclick="load_dataset_4()">Load Stimulated GPI/vGlut 2</button>
     </div>
 
     <div id='toggles'>
@@ -80,7 +80,9 @@
         document.getElementById('title').innerHTML = 'Non-Stimulated Neuron';
         var light = new THREE.PointLight(0xFFFFFF, 1 , 500);
         light.position.set(10,0,25);
-        scene.add(light)
+        var light2 = new THREE.PointLight(0xFFFFFF, 1 , 500);
+        light2.position.set(0,0,-25);
+        scene.add(light2)
         load_dataset_1();
         document.getElementById('red_button_text').innerHTML = 'Hide Red Localizations';
         document.getElementById('orange_button_text').innerHTML = 'Hide Orange Localizations';
@@ -92,60 +94,31 @@
             var quick_description = 'This is an example of a neuron without much drift, sitting in Tyrodes(with glucose) and no stimulation'
             clear_scene();
             camera_reset();
-            document.getElementById('title').innerHTML = 'Non-Stimulated Neuron';
-            document.getElementById('description').innerHTML = quick_description;
-            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
-            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
-            build_new_scene("1_red.txt",1);
-            build_new_scene("1_orange.txt",2);
+            local_json_load("Drift_corrected_no_stimulation.json")
         }
         function load_dataset_2(){
             clear_scene();
             camera_reset();
-            var quick_description = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
-            document.getElementById('title').innerHTML = 'Stimulated Neuron';
-            document.getElementById('description').innerHTML = quick_description;
-            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
-            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
-            build_new_scene("2_red.txt",1)
-            build_new_scene("2_orange.txt",2)
+            local_json_load("Drift_corrected_no_stim_1.json")
         }
         function load_dataset_3(){
             clear_scene();
             camera_reset();
-            document.getElementById('title').innerHTML = 'Stimulated Neuron';
-            document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
-            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
-            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
-            build_new_scene("3_red.txt",1)
-            build_new_scene("3_orange.txt",2)
+            local_json_load("Drift_corrected_with_stim.json")
         }
         function load_dataset_4(){
             clear_scene();
             camera_reset();
-            document.getElementById('title').innerHTML = 'Stimulated Neuron';
-            document.getElementById('description').innerHTML = 'This is an example of a neuron without much drift, sitting in Tyrodes(with deoxyglucose) for over 5 minutes after 600 AP at 10 Hz';
-            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
-            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
-            build_new_scene("4_red.txt",1)
-            build_new_scene("4_orange.txt",2)
+            local_json_load("Drift_corrected_with_stim_2.json")
         }
-        function load_dataset_drift(){
-            clear_scene();
-            camera_reset();
-            document.getElementById('title').innerHTML = 'Example of Drift in early sets';
-            document.getElementById('description').innerHTML = 'This is an example of a neuron with much drift, sitting in Tyrodes(with glucose) and no stimulation';
-            document.getElementById('orange_legend_text').innerHTML = 'vGlut-mEos';
-            document.getElementById('red_legend_text').innerHTML = 'GPI-Halo';
-            build_new_scene("drift_red.txt",1)
-            build_new_scene("drift_orange.txt",2)
-        }
+
         function clear_scene(){
             while(scene.children.length >0){
             // clear the scene
                 scene.remove(scene.children[0]);
             }
             scene.add(light);
+            scene.add(light2)
             build_scale();
         }
         function build_new_scene(stringName,color)

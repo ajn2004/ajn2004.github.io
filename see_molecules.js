@@ -55,10 +55,6 @@ function show_both_colors(){
     document.getElementById('red_button_text').innerHTML = 'Hide Red Localizations';
 }
 
-function runPython(){
-
-    
-}
 
 function parse_data(all_text){
     lines = all_text.split("\n");
@@ -285,6 +281,10 @@ async function uploadFile(file){
     build_new_json_scene(result);
     }
     
+}
+
+function local_json_load(file){
+    fetch(file).then(response=>{return response.json();}).then(data => build_new_json_scene(data))
 }
 
 function build_new_json_scene(results){
