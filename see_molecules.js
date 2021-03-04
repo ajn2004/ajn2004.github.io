@@ -284,7 +284,7 @@ async function uploadFile(file){
 }
 
 function local_json_load(file){
-    fetch(file).then(response=>{return response.json();}).then(data => build_new_json_scene(data))
+    fetch(file).then(response=>{return response.json();}).then(result => build_new_json_scene(result))
 }
 
 function build_new_json_scene(results){
