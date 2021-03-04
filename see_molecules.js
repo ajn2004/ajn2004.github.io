@@ -309,10 +309,11 @@ function build_new_json_scene(results){
         try{// try to assign info
             
             document.getElementById('description').innerHTML = results.info;
+            document.getElementById('title').innerHTML = results.title;
         }
         catch(err){}
         
-        document.getElementById('title').innerHTML = "";
+        
         
         
 } 
