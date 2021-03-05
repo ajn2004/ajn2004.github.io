@@ -188,8 +188,12 @@ function mouseAction(event){
 function cameraRotation(event){
     // handles camera rotation
     // rotate camera by a difference between  mouse drag
-    camera.rotation.y = camera_y + (mouse_x - event.x)*0.005;
+    // determine euler
+    
     camera.rotation.x = camera_x + (mouse_y - event.y)*0.005;
+    camera.rotation.y = camera_y + (mouse_x - event.x)*0.005;
+    
+    
    
 }
 function objectRotation(event){
@@ -227,6 +231,7 @@ function objectTranslation(event){
 function removeMouseUp(event){
     window.removeEventListener("mousemove",cameraRotation);
     window.removeEventListener("mousemove",objectRotation);
+    disp(camera.rotation)
 }
 
 function disp(object){
