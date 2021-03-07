@@ -250,45 +250,11 @@ function cameraRotation(event){
     
     
     camera_quarternion_rotation(up_rot)
-    /*
-    camera.quaternion.premultiply(up_rot);
-    camera.quaternion.multiply(up_rot.inverse());
-    camera.quaternion.normalize();
-    camera.left.premultiply(up_rot)
-    camera.left.multiply(up_rot.inverse())
-    camera.view.premultiply(up_rot)
-    camera.view.multiply(up_rot.inverse())
-    camera.up_q.premultiply(up_rot)
-    camera.up_q.multiply(up_rot.inverse())
-    camera.left.w = 0;
-    camera.up_q.w = 0;
-    camera.view.w = 0;
-    camera.left.normalize();
-    camera.view.normalize();
-    camera.up_q.normalize();
-*/
     var angle = (mouse_y - event.y)*angle_step;
-    left_rot.setFromAxisAngle(camera.left, angle/2);
-    
+    left_rot.setFromAxisAngle(camera.left, angle/2);   
     camera_quarternion_rotation(left_rot)
     
-    /*
-    camera.quaternion.multiply(left_rot);
-    camera.quaternion.normalize();
-    camera.left.premultiply(left_rot)
-    camera.left.multiply(left_rot.inverse())
-    camera.view.premultiply(left_rot)
-    camera.view.multiply(left_rot.inverse())
-    camera.up_q.premultiply(left_rot)
-    camera.up_q.multiply(left_rot.inverse())
-    camera.left.w = 0;
-    camera.up_q.w = 0;
-    camera.view.w = 0;
-    camera.left.normalize();
-    camera.view.normalize();
-    camera.up_q.normalize();*/
-    /*disp(camera.quaternion.multiply(new THREE.Quaternion(0,0,Math.sin(Math.PI/2),Math.cos(Math.PI/2))))*/
-    //camera.quaternion.w= THREE.Quaternion(0,0,0,1);
+
     mouse_x = event.x;
     mouse_y = event.y;
     
@@ -348,12 +314,8 @@ function scrollZoom(event){
  // rotate in view in the left hand curl direction
             var angle = event.deltaY*0.001;
             var qm = new THREE.Quaternion();
-            qm.x = camera.view.x*Math.sin(angle);
-            qm.y = camera.view.y*Math.sin(angle);
-            qm.z = camera.view.z*Math.sin(angle);
-            qm.w = Math.cos(angle);
-            disp(qm)
-            cameraquarternion(qm)
+            qm.setFromAxisAngle(camera.view,angle/2)
+            camera_quarternion_rotation(qm)
          }else{
             var step_size = -0.005*event.deltaY;
             var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
