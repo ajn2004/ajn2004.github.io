@@ -16,46 +16,70 @@
         <input type="file" id="fileElem" onchange="uploadFile(this.file)">
       </div>
 
-    <div id='credit'> 
+    <div id='credit'
+    unselectable ="on"
+    onclickonselectstart ="return false;"
+    onmousedown = "return false;"> 
         Made by <a href="mailto:ajn2004@med.cornell.edu">Andrew Nelson Ph.D.</a> <br /> <a href="https://sites.google.com/site/ryanlab1/Home">Tim Ryan Lab</a><br />
         Check out my <a href="https://github.com/ajn2004">github</a>
     </div>
-    <div id = 'controls'><p><u>Controls</u><br />
+    <div id = 'controls'
+    unselectable ="on"
+    onclickonselectstart ="return false;"
+    onmousedown = "return false;"><p><u>Controls</u><br />
         scroll wheel = forward/backward<br/>shift + scroll wheel = camera roll<br/> w = move forward<br /> a = move left<br /> s = move backward<br /> d = move right<br /> r =reset<br />
         right click = rotate camera<br /> left click = rotate object<br /> White cross is 1&mu;m x 1&mu;m x 1&mu;m
     </p>
     </div>
     
-    <div id='legend'>
+    <div id='legend'
+    unselectable ="on"
+    onclickonselectstart ="return false;"
+    onmousedown = "return false;">
         <u>Legend</u><br/>
         Red: <span id='red_legend_text'></span><br/>
         Orange: <span id='orange_legend_text'></span>
     </div>
       
 
-    <div id = 'example-buttons'>
+    <div id = 'example-buttons'
+    unselectable ="on"
+    onclickonselectstart ="return false;"
+    onmousedown = "return false;">
     <button type="button" onclick="load_dataset_1()">Resting GPI/vGlut 1</button>
     <button type="button" onclick="load_dataset_2()">Resting GPI/vGlut 2</button>
     <button type="button" onclick="load_dataset_3()">Stimulated GPI/vGlut 1</button>
     <button type="button" onclick="load_dataset_4()">Stimulated GPI/vGlut 2</button>
     </div>
 
-    <div id='toggles'>
+    <div id='toggles'
+    unselectable ="on"
+    onclickonselectstart ="return false;"
+    onmousedown = "return false;">
     <button type="button" onclick="toggle_red()"><span id="red_button_text"></span></button>
     <button type="button" onclick="toggle_orange()"><span id="orange_button_text"></span></button>
     <button type="button" onclick="show_both_colors()">Show Both Colors</button>
     </div>
 
-    <div id='cell-title'>
+    <div id='cell-title'
+    unselectable ="on"
+    onclickonselectstart ="return false;"
+    onmousedown = "return false;">
         <span id="title"></span> Dataset
     </div>
     
-    <div id ='describe'>
+    <div id ='describe'
+    unselectable ="on"
+    onclickonselectstart ="return false;"
+    onmousedown = "return false;">
         <u>Info</u><br/>
         <span id="description"></span>
     </div>
 
-    <div id ='file_load'>You can load a file by dragging and dropping onto the page</div>
+    <div id ='file_load'
+    unselectable ="on"
+    onclickonselectstart ="return false;"
+    onmousedown = "return false;">You can load a file by dragging and dropping onto the page</div>
 
     <script>
 
@@ -69,10 +93,10 @@
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
         camera.position.z = 10;
-        var view = new THREE.Quaternion(0,0,1,0); // camera is initially looking at origin from +z
-        var left = new THREE.Quaternion(1,0,0,0); // camera is initially looking at origin from +z
-        var up = new THREE.Quaternion(0,1,0,0);
-
+        var view = new THREE.Vector3(0,0,1); // camera is initially looking at origin from +z
+        var left = new THREE.Vector3(1,0,0); // camera is initially looking at origin from +z
+        var up = new THREE.Vector3(0,1,0);
+        disp(camera.quaternion)
         camera.view = view; // The view vector is going to act as a 'look at' vector for our rotations.
         camera.left = left;
         camera.up_q = up;

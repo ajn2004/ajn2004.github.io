@@ -177,12 +177,14 @@ function keyboardMovement(event){
     }
 }
 function camera_reset(){
-    camera.position.x = 0;
+        camera.position.x = 0;
         camera.position.y = 0;
         camera.position.z = 10;
         camera.rotation.x = 0;
         camera.rotation.y = 0;
         camera.rotation.z = 0;
+        camera.quaternion.z = -1;
+        camera.quaternion.w = 0;
 }
 function mouseAction(event){
     // Rotational controls
@@ -193,6 +195,9 @@ function mouseAction(event){
         camera_y = camera.rotation.y;
         camera_x = camera.rotation.x;
         window.addEventListener("mousemove", cameraRotation); 
+        disp(camera.left)
+    disp('Up Vector')
+    disp(camera.up_q)
     } else if (event.button == 0){
         // Right click rotates camera
         object_y = red_mesh.rotation.y;
@@ -202,6 +207,24 @@ function mouseAction(event){
     }
     
 }
+
+function camera_quarternion_rotation(qm){
+    // Rotates camera by qm and adjusts positional vectors accordingly
+    qms = qm.clone()
+    qms = qms.inverse()
+    camera.applyQuaternion(qm);
+    //camera.quaternion.premultiply(qm);
+    
+
+    camera.quaternion = new THREE.Quaternion(0,0,0,1)
+    
+    camera.left.applyQuaternion(qm)
+    camera.view.applyQuaternion(qm)
+    camera.up_q.applyQuaternion(qm)
+    
+
+}
+
 function cameraRotation(event){
     // handles camera rotation
     // rotate camera by a difference between  mouse drag
@@ -219,42 +242,53 @@ function cameraRotation(event){
 
     // yaw rotation
     // We are rotating vectors left and view about up
-    var angle_step = 0.002;
+    var angle_step = -0.02;
     var angle = (mouse_x - event.x)*angle_step;
-    var up_rot = new THREE.Quaternion();
-    var left_rot = new THREE.Quaternion();
+    var up_rot = new THREE.Quaternion()
+    up_rot.setFromAxisAngle(camera.up_q, angle/2);
+    var left_rot = new THREE.Quaternion()
     
     
-    up_rot.x = camera.up_q.x*Math.sin(angle/2);
-    up_rot.y = camera.up_q.y*Math.sin(angle/2);
-    up_rot.z = camera.up_q.z*Math.sin(angle/2);
-    up_rot.w = Math.cos(angle/2);
-    camera.quaternion.multiply(up_rot);
+    camera_quarternion_rotation(up_rot)
+    /*
+    camera.quaternion.premultiply(up_rot);
+    camera.quaternion.multiply(up_rot.inverse());
     camera.quaternion.normalize();
-    camera.left.multiply(up_rot)
-    camera.view.multiply(up_rot)
-    camera.up_q.multiply(up_rot)
+    camera.left.premultiply(up_rot)
+    camera.left.multiply(up_rot.inverse())
+    camera.view.premultiply(up_rot)
+    camera.view.multiply(up_rot.inverse())
+    camera.up_q.premultiply(up_rot)
+    camera.up_q.multiply(up_rot.inverse())
+    camera.left.w = 0;
+    camera.up_q.w = 0;
+    camera.view.w = 0;
     camera.left.normalize();
     camera.view.normalize();
     camera.up_q.normalize();
+*/
     var angle = (mouse_y - event.y)*angle_step;
-    left_rot.x = camera.left.x*Math.sin(angle/2);
-    left_rot.y = camera.left.y*Math.sin(angle/2);
-    left_rot.z = camera.left.z*Math.sin(angle/2);
-    left_rot.w = Math.cos(angle/2);
+    left_rot.setFromAxisAngle(camera.left, angle/2);
     
+    camera_quarternion_rotation(left_rot)
     
-    
+    /*
     camera.quaternion.multiply(left_rot);
     camera.quaternion.normalize();
-    camera.left.multiply(left_rot)
-    camera.view.multiply(left_rot)
-    camera.up_q.multiply(left_rot)
+    camera.left.premultiply(left_rot)
+    camera.left.multiply(left_rot.inverse())
+    camera.view.premultiply(left_rot)
+    camera.view.multiply(left_rot.inverse())
+    camera.up_q.premultiply(left_rot)
+    camera.up_q.multiply(left_rot.inverse())
+    camera.left.w = 0;
+    camera.up_q.w = 0;
+    camera.view.w = 0;
     camera.left.normalize();
     camera.view.normalize();
-    camera.up_q.normalize();
+    camera.up_q.normalize();*/
     /*disp(camera.quaternion.multiply(new THREE.Quaternion(0,0,Math.sin(Math.PI/2),Math.cos(Math.PI/2))))*/
-    camera.quaternion = THREE.Quaternion(0,0,0,1)
+    //camera.quaternion.w= THREE.Quaternion(0,0,0,1);
     mouse_x = event.x;
     mouse_y = event.y;
     
@@ -271,26 +305,16 @@ function objectRotation(event){
     var angle_step = 0.02;
     var up_rot = new THREE.Quaternion();
     var left_rot = new THREE.Quaternion();
-    var angle = -(mouse_x - event.x)*angle_step;
-    var up_vec = new THREE.Vector3();
     
-
-    up_rot.x = camera.view.x*Math.sin(angle/2);
-    up_rot.y = camera.view.y*Math.sin(angle/2);
-    up_rot.z = camera.view.z*Math.sin(angle/2);
-    up_rot.w = Math.cos(angle/2);
-    red_mesh.quaternion.multiply(up_rot);
-    orange_mesh.quaternion.multiply(up_rot);
+    var angle = -(mouse_x - event.x)*angle_step;
+    up_rot.setFromAxisAngle(camera.up_q, angle/2)
+    red_mesh.applyQuaternion(up_rot);
+    orange_mesh.applyQuaternion(up_rot);
     
     var angle = -(mouse_y - event.y)*angle_step;
-    left_rot.x = camera.left.x*Math.sin(angle/2);
-    left_rot.y = camera.left.y*Math.sin(angle/2);
-    left_rot.z = camera.left.z*Math.sin(angle/2);
-    left_rot.w = Math.cos(angle/2);
-    red_mesh.quaternion.multiply(left_rot);
-    orange_mesh.quaternion.multiply(left_rot);
-    red_mesh.quaternion.normalize()
-    orange_mesh.quaternion.normalize()
+    left_rot.setFromAxisAngle(camera.left, angle/2)
+    red_mesh.applyQuaternion(left_rot);
+    orange_mesh.applyQuaternion(left_rot);
     mouse_x = event.x;
     mouse_y = event.y;
    
@@ -314,11 +338,11 @@ function objectTranslation(event){
 function removeMouseUp(event){
     window.removeEventListener("mousemove",cameraRotation);
     window.removeEventListener("mousemove",objectRotation);
-    disp(camera.quaternion)
+    
 }
 
 function scrollZoom(event){
-        disp(event)
+        
          // Moving 'forward'
          if(event.altKey){
  // rotate in view in the left hand curl direction
@@ -328,8 +352,8 @@ function scrollZoom(event){
             qm.y = camera.view.y*Math.sin(angle);
             qm.z = camera.view.z*Math.sin(angle);
             qm.w = Math.cos(angle);
-            camera.quaternion.multiply(qm);
-            camera.quaternion.normalize();
+            disp(qm)
+            cameraquarternion(qm)
          }else{
             var step_size = -0.005*event.deltaY;
             var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
@@ -375,12 +399,16 @@ function handleDrop(e){
     let dt = e.dataTransfer
     let file = dt.files
     // assume the user will only drop json files
-    fileext = file[0].name.substring(file[0].name.length - 4, file[0].name.length);
-    if (fileext == "json"){
-        fr = uploadFile(file)
-    }else{
+    try{
+        fileext = file[0].name.substring(file[0].name.length - 4, file[0].name.length);
+        if (fileext == "json"){
+            fr = uploadFile(file)
+        }else{
 
+        }
     }
+    catch(err){}
+
 }
 
 async function uploadFile(file){
