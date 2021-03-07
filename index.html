@@ -69,7 +69,13 @@
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000)
         camera.position.z = 10;
+        var view = new THREE.Quaternion(0,0,1,0); // camera is initially looking at origin from +z
+        var left = new THREE.Quaternion(1,0,0,0); // camera is initially looking at origin from +z
+        var up = new THREE.Quaternion(0,1,0,0);
 
+        camera.view = view; // The view vector is going to act as a 'look at' vector for our rotations.
+        camera.left = left;
+        camera.up_q = up;
         
         var renderer = new THREE.WebGLRenderer({andtialias: true});
         renderer.setClearColor("#00000");

@@ -133,10 +133,26 @@ function keyboardMovement(event){
         update_position(movement);
          
     } else if ( event.keyCode == 81){
-        // look at origin and orient
+        // rotate in view in the left hand curl direction
+       var qm = new THREE.Quaternion();
+       qm.x = camera.view.x*Math.sin(Math.PI/50);
+       qm.y = camera.view.y*Math.sin(Math.PI/50);
+       qm.z = camera.view.z*Math.sin(Math.PI/50);
+       qm.w = Math.cos(Math.PI/50);
+        camera.quaternion.multiply(qm);
+        camera.quaternion.normalize();
+         
+    } else if ( event.keyCode == 69){
+        // unrotate in view
        
-        camera.lookAt(0,0,0);
-        disp(camera.rotation)
+        var qm = new THREE.Quaternion();
+        qm.x = camera.view.x*Math.sin(Math.PI/50);
+        qm.y = camera.view.y*Math.sin(Math.PI/50);
+        qm.z = camera.view.z*Math.sin(Math.PI/50);
+        qm.w = -Math.cos(Math.PI/50);
+       camera.quaternion.multiply(qm);
+       camera.quaternion.normalize();
+       
          
     } else if ( event.keyCode == 82){
         // reset
@@ -148,6 +164,7 @@ function keyboardMovement(event){
         camera.rotation.x = 0;
         camera.rotation.y = 0;
         camera.rotation.z = 0;
+        camera.quaternion = THREE.Quaternion(0,0,0,1)
         orange_mesh.rotation.x = 0;
         orange_mesh.rotation.y = 0;
         orange_mesh.rotation.z = 0;
@@ -162,7 +179,7 @@ function keyboardMovement(event){
 function camera_reset(){
     camera.position.x = 0;
         camera.position.y = 0;
-        camera.position.z = 10;
+        camera.position.z = 0;
         camera.rotation.x = 0;
         camera.rotation.y = 0;
         camera.rotation.z = 0;
@@ -189,9 +206,59 @@ function cameraRotation(event){
     // handles camera rotation
     // rotate camera by a difference between  mouse drag
     // determine euler
+
+    // View vector keeps track of intersection of camera view axis and a unit circle centered around the camera
+    // plan of attack is to change mouse events into theta and phi events
+    // up and view define third axis through cross product
+    // We can always rotate around the 'up' and 'left' axis to get our
+    // yaw and pitch. So the trick then becomes defining them by keeping track
+    // From there camera.rotateOnAxis()
+    //camera.left = camera.view;
+    //camera.left.cross(camera.up);
+
+
+    // yaw rotation
+    // We are rotating vectors left and view about up
+    var angle_step = 0.002;
+    var angle = (mouse_x - event.x)*angle_step;
+    var up_rot = new THREE.Quaternion();
+    var left_rot = new THREE.Quaternion();
     
-    camera.rotation.x = camera_x + (mouse_y - event.y)*0.005;
-    camera.rotation.y = camera_y + (mouse_x - event.x)*0.005;
+    
+    up_rot.x = camera.up_q.x*Math.sin(angle/2);
+    up_rot.y = camera.up_q.y*Math.sin(angle/2);
+    up_rot.z = camera.up_q.z*Math.sin(angle/2);
+    up_rot.w = Math.cos(angle/2);
+    camera.quaternion.multiply(up_rot);
+    camera.quaternion.normalize();
+    //camera.left.multiply(up_rot)
+    //camera.view.multiply(up_rot)
+    //camera.up_q.multiply(up_rot)
+    camera.left.normalize();
+    camera.view.normalize();
+    camera.up_q.normalize();
+    var angle = (mouse_y - event.y)*angle_step;
+    left_rot.x = camera.left.x*Math.sin(angle/2);
+    left_rot.y = camera.left.y*Math.sin(angle/2);
+    left_rot.z = camera.left.z*Math.sin(angle/2);
+    left_rot.w = Math.cos(angle/2);
+    
+    
+    
+    camera.quaternion.multiply(left_rot);
+    camera.quaternion.normalize();
+    //camera.left.multiply(left_rot)
+    //camera.view.multiply(left_rot)
+    //camera.up_q.multiply(left_rot)
+    camera.left.normalize();
+    camera.view.normalize();
+    camera.up_q.normalize();
+    /*disp(camera.quaternion.multiply(new THREE.Quaternion(0,0,Math.sin(Math.PI/2),Math.cos(Math.PI/2))))*/
+    camera.quaternion = THREE.Quaternion(0,0,0,1)
+    mouse_x = event.x;
+    mouse_y = event.y;
+    
+    
     
     
    
@@ -199,17 +266,33 @@ function cameraRotation(event){
 function objectRotation(event){
     // handles object rotation
     // rotate object by a difference between  mouse drag
-    var b = new THREE.Vector3((mouse_y - event.y)*0.01 ,(mouse_x - event.x)*0.01,   0);
-   
-    var rotation = b;
-    red_mesh.rotation.x = object_x - rotation.x;
-    red_mesh.rotation.y = object_y - rotation.y;
-    red_mesh.rotation.z = object_z - rotation.z
-    orange_mesh.rotation.x = object_x - rotation.x;
-    orange_mesh.rotation.y = object_y - rotation.y;
-    orange_mesh.rotation.z = object_z - rotation.z;
+    // We want to determine the proper axes of rotation by
+    // Cross view with 
+    var angle_step = 0.02;
+    var up_rot = new THREE.Quaternion();
+    var left_rot = new THREE.Quaternion();
+    var angle = -(mouse_x - event.x)*angle_step;
+    var up_vec = new THREE.Vector3();
     
+
+    up_rot.x = camera.up_q.x*Math.sin(angle/2);
+    up_rot.y = camera.up_q.y*Math.sin(angle/2);
+    up_rot.z = camera.up_q.z*Math.sin(angle/2);
+    up_rot.w = Math.cos(angle/2);
+    red_mesh.quaternion.multiply(up_rot);
+    orange_mesh.quaternion.multiply(up_rot);
     
+    var angle = -(mouse_y - event.y)*angle_step;
+    left_rot.x = camera.left.x*Math.sin(angle/2);
+    left_rot.y = camera.left.y*Math.sin(angle/2);
+    left_rot.z = camera.left.z*Math.sin(angle/2);
+    left_rot.w = Math.cos(angle/2);
+    red_mesh.quaternion.multiply(left_rot);
+    orange_mesh.quaternion.multiply(left_rot);
+    red_mesh.quaternion.normalize()
+    orange_mesh.quaternion.normalize()
+    mouse_x = event.x;
+    mouse_y = event.y;
    
 }
 function objectTranslation(event){
@@ -231,7 +314,30 @@ function objectTranslation(event){
 function removeMouseUp(event){
     window.removeEventListener("mousemove",cameraRotation);
     window.removeEventListener("mousemove",objectRotation);
-    disp(camera.rotation)
+    disp(camera.quaternion)
+}
+
+function scrollZoom(event){
+        disp(event)
+         // Moving 'forward'
+         if(event.altKey){
+ // rotate in view in the left hand curl direction
+            var angle = event.deltaY*0.001;
+            var qm = new THREE.Quaternion();
+            qm.x = camera.view.x*Math.sin(angle);
+            qm.y = camera.view.y*Math.sin(angle);
+            qm.z = camera.view.z*Math.sin(angle);
+            qm.w = Math.cos(angle);
+            camera.quaternion.multiply(qm);
+            camera.quaternion.normalize();
+         }else{
+            var step_size = -0.005*event.deltaY;
+            var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
+            var b = new THREE.Vector3(0, 0, -step_size); // step 'along -zprime'
+            movement = b.applyEuler(a);
+            
+            update_position(movement);
+         }
 }
 
 function disp(object){
@@ -242,13 +348,14 @@ function disp(object){
 window.addEventListener("keydown", keyboardMovement);
 window.addEventListener("mousedown", mouseAction);
 window.addEventListener("mouseup", removeMouseUp);
-
+window.addEventListener("mousewheel", scrollZoom);
 window.addEventListener("dragover", function(e){
     e.preventDefault();
 })
 window.addEventListener("drop", function(e){
     e.preventDefault();
 })
+
 // Drag and drop functionality
 
 
