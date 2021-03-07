@@ -44,6 +44,27 @@ function toggle_orange(){
         document.getElementById('orange_button_text').innerHTML = 'Show Orange Localizations';
     }
 }
+
+function toggle_scale(){
+    // scale_on represents whether a scale is present on the scene
+    
+    
+    if (!scale_on){
+        // no scale present, build one
+    scene.add(dash_x);
+    scene.add(dash_y);
+    scene.add(dash_z);
+    center_scale();
+
+    }else{
+        // scale is present, remove it
+        scene.remove(dash_x);
+        scene.remove(dash_y);
+        scene.remove(dash_z);
+        
+    }
+    scale_on = !scale_on;
+}
 function show_both_colors(){
     // just reset everything by clearing scene and adding both meshes
     clear_scene();
@@ -82,19 +103,123 @@ function update_position(movement){
     var R = Math.sqrt((camera.position.x + movement.x)*(camera.position.x + movement.x) +(camera.position.y + movement.y)*(camera.position.y + movement.y) +(camera.position.z + movement.z)*(camera.position.z + movement.z))
     
     if (R < 15){ // if radius is less than 15, update movement, this prevents zooming out infinitely far
-    camera.position.x += movement.x;
-    camera.position.y += movement.y;
-    camera.position.z += movement.z;}
+    camera.position.add(movement);
+    }
 }
 // Movement Controls
 function keyboardMovement(event){
     // Implement basic WASD controls
     // The camera is oriented towards the -z' axi
-    step_size = 0.05;// Step 50 nm at a time
+    
     var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
-    var o = new THREE.Vector3(0,0, -step_size); // original orientation vector for camera
     
+    if(event.altKey){
+        alt_keycodes(event);
+    } else if(event.ctrlKey){
+        ctrl_keycodes(event);
+    } else{
+        keycodes(event);
+    }
+}
+
+function center_scale(){
+    // Center scale to field of view
+    if(toggle_scale_movement){
+    dash_x.position.set(camera.position.x + camera.view.x*2, camera.position.y + camera.view.y*2,camera.position.z + camera.view.z*2 )
+    dash_y.position.set(camera.position.x + camera.view.x*2, camera.position.y + camera.view.y*2,camera.position.z + camera.view.z*2 )
+    dash_z.position.set(camera.position.x + camera.view.x*2, camera.position.y + camera.view.y*2,camera.position.z + camera.view.z*2 )
+    }
     
+}
+
+function alt_keycodes(event){// behavior for alt modified keys
+    var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
+    var b = new THREE.Vector3() // application vector
+    var step_size = 0.01; 
+    if(event.keyCode == 51){
+        // forward thruster
+         b.z = -step_size; // step 'along -zprime'
+         camera.velocity.add(b.applyEuler(a));
+         
+    } else if(event.keyCode == 54){
+        // upward thruster
+        b.z = step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    }else if(event.keyCode == 50){
+        // upward thruster
+        b.y = step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 53){
+        // downward thruster
+        b.y = -step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    }else if(event.keyCode == 49){
+        // upward thruster
+        b.x = -step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 52){
+        // downward thruster
+        b.x = step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 18){
+    } else{ // if unbound display keycode
+        disp(event.keyCode)    
+    }
+}
+
+function ctrl_keycodes(event){// behavior for ctrl modified keys
+    // Orbital controls to orbit the scale
+    // our R vector is the vector that goes from the scale to our camera which defines it as
+    // R camera_position - scale_position
+    
+    var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
+    var b = new THREE.Vector3() // application vector
+    var step_size = 0.1; 
+    if(event.keyCode == 51){
+        // increment omega 3 
+        disp(event)
+         b.z = -step_size; // step 'along -zprime'
+         camera.omega.add(b.applyEuler(a));
+    } else if(event.keyCode == 54){
+        // decrement omega 3
+        b.z = step_size;
+        camera.omega.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 50){
+        // increment omega 2
+        b.y = -step_size;
+        camera.omega.add(b.applyEuler(a));
+        
+    }  else if(event.keyCode == 53){
+        // decrement omega 2
+        b.y = step_size;
+        camera.omega.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 49){
+        // increment omega 1
+        b.x = -step_size;
+        camera.omega.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 52){
+        // decrement omega 1
+        b.x = step_size;
+        camera.omega.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 17){
+    } else{ // if unbound display keycode
+        disp(event.keyCode)    
+    }
+    
+}
+
+function keycodes(event){// Behavior for non modified keys
+    var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
+    var step_size = 0.05;
     if ( event.keyCode == 87){
         // Moving 'forward'
         var b = new THREE.Vector3(0, 0, -step_size); // step 'along -zprime'
@@ -132,49 +257,60 @@ function keyboardMovement(event){
         movement = b.applyEuler(a);
         update_position(movement);
          
-    } else if ( event.keyCode == 81){
-        // rotate in view in the left hand curl direction
-       var qm = new THREE.Quaternion();
-       qm.x = camera.view.x*Math.sin(Math.PI/50);
-       qm.y = camera.view.y*Math.sin(Math.PI/50);
-       qm.z = camera.view.z*Math.sin(Math.PI/50);
-       qm.w = Math.cos(Math.PI/50);
-        camera.quaternion.multiply(qm);
-        camera.quaternion.normalize();
+    } else if ( event.keyCode == 53){
+        // toggle scale movement
+        toggle_scale_movement = !toggle_scale_movement
          
-    } else if ( event.keyCode == 69){
-        // unrotate in view
+    }else if ( event.keyCode == 52){
+        // toggle scale movement
+        toggle_scale();
+         
+    } else if (event.keyCode == 51 || event.keyCode == 81){
+        // q or 3 should rotate view
+        var qm = new THREE.Quaternion();
+        qm.setFromAxisAngle(camera.view,Math.PI/30)
+        camera_quarternion_rotation(qm)
+         
+    } else if ( event.keyCode == 69 || event.keyCode == 54){
+        // e or 6 should unrotate
        
         var qm = new THREE.Quaternion();
-        qm.x = camera.view.x*Math.sin(Math.PI/50);
-        qm.y = camera.view.y*Math.sin(Math.PI/50);
-        qm.z = camera.view.z*Math.sin(Math.PI/50);
-        qm.w = -Math.cos(Math.PI/50);
-       camera.quaternion.multiply(qm);
-       camera.quaternion.normalize();
+        qm.setFromAxisAngle(camera.view,-Math.PI/30)
+        camera_quarternion_rotation(qm)
        
          
+    }else if ( event.keyCode == 49){
+        // 1 allows for a red toggle
+        toggle_red()
+    }   else if ( event.keyCode == 50){
+        // 2 allows for a red toggle
+        toggle_orange()
     } else if ( event.keyCode == 82){
         // reset
-        var b = new THREE.Vector3(0, -step_size, 0); // step 'along -zprime'
-        movement = b.applyEuler(a);
+        
         camera.position.x = 0;
         camera.position.y = 0;
         camera.position.z = 10;
-        camera.rotation.x = 0;
-        camera.rotation.y = 0;
-        camera.rotation.z = 0;
-        camera.quaternion = THREE.Quaternion(0,0,0,1)
-        orange_mesh.rotation.x = 0;
-        orange_mesh.rotation.y = 0;
-        orange_mesh.rotation.z = 0;
-        red_mesh.rotation.x = 0;
-        red_mesh.rotation.y = 0;
-        red_mesh.rotation.z = 0
-         
+        reset_rotation(camera)
+        camera.quaternion = new THREE.Quaternion(0,0,0,1)
+        camera.view = new THREE.Vector3(0,0,-1);
+        camera.left = new THREE.Vector3(1,0,0);
+        camera.up_q = new THREE.Vector3(0,1,0);
+        camera.velocity = new THREE.Vector3(0,0,0);
+
+        reset_rotation(red_mesh)
+        reset_rotation(orange_mesh)
+        reset_rotation(dash_x)
+        reset_rotation(dash_y)
+        reset_rotation(dash_z)
     } else{
         disp(event.keyCode)    
     }
+}
+function reset_rotation(object){
+    object.rotation.x = 0;
+    object.rotation.y = 0;
+    object.rotation.z = 0;
 }
 function camera_reset(){
         camera.position.x = 0;
@@ -183,9 +319,12 @@ function camera_reset(){
         camera.rotation.x = 0;
         camera.rotation.y = 0;
         camera.rotation.z = 0;
-        camera.quaternion.z = -1;
-        camera.quaternion.w = 0;
+        camera.quaternion.z = 0;
+        camera.quaternion.w = 1;
 }
+
+
+
 function mouseAction(event){
     // Rotational controls
     mouse_x = event.x;
@@ -195,9 +334,6 @@ function mouseAction(event){
         camera_y = camera.rotation.y;
         camera_x = camera.rotation.x;
         window.addEventListener("mousemove", cameraRotation); 
-        disp(camera.left)
-    disp('Up Vector')
-    disp(camera.up_q)
     } else if (event.button == 0){
         // Right click rotates camera
         object_y = red_mesh.rotation.y;
@@ -211,18 +347,13 @@ function mouseAction(event){
 function camera_quarternion_rotation(qm){
     // Rotates camera by qm and adjusts positional vectors accordingly
     qms = qm.clone()
-    qms = qms.inverse()
     camera.applyQuaternion(qm);
-    //camera.quaternion.premultiply(qm);
-    
-
-    camera.quaternion = new THREE.Quaternion(0,0,0,1)
-    
-    camera.left.applyQuaternion(qm)
-    camera.view.applyQuaternion(qm)
-    camera.up_q.applyQuaternion(qm)
-    
-
+    camera.left.applyQuaternion(qm);
+    camera.view.applyQuaternion(qm);
+    camera.up_q.applyQuaternion(qm);
+    camera.velocity.applyQuaternion(qm);
+    camera.acceleration.applyQuaternion(qm);
+    center_scale()    
 }
 
 function cameraRotation(event){
@@ -242,7 +373,7 @@ function cameraRotation(event){
 
     // yaw rotation
     // We are rotating vectors left and view about up
-    var angle_step = -0.02;
+    var angle_step = 0.02;
     var angle = (mouse_x - event.x)*angle_step;
     var up_rot = new THREE.Quaternion()
     up_rot.setFromAxisAngle(camera.up_q, angle/2);
@@ -263,6 +394,7 @@ function cameraRotation(event){
     
    
 }
+
 function objectRotation(event){
     // handles object rotation
     // rotate object by a difference between  mouse drag
@@ -276,11 +408,26 @@ function objectRotation(event){
     up_rot.setFromAxisAngle(camera.up_q, angle/2)
     red_mesh.applyQuaternion(up_rot);
     orange_mesh.applyQuaternion(up_rot);
+    dash_x.applyQuaternion(up_rot);
+    dash_y.applyQuaternion(up_rot);
+    dash_z.applyQuaternion(up_rot);
     
     var angle = -(mouse_y - event.y)*angle_step;
     left_rot.setFromAxisAngle(camera.left, angle/2)
     red_mesh.applyQuaternion(left_rot);
     orange_mesh.applyQuaternion(left_rot);
+    dash_x.applyQuaternion(left_rot);
+    dash_y.applyQuaternion(left_rot);
+    dash_z.applyQuaternion(left_rot);
+    if(!toggle_scale_movement){
+        // in the event toggle_scale_movement is false, cross should rotate w/ scenery
+        dash_x.position.applyQuaternion(up_rot);
+        dash_x.position.applyQuaternion(left_rot);
+        dash_y.position.applyQuaternion(up_rot);
+        dash_y.position.applyQuaternion(left_rot);
+        dash_z.position.applyQuaternion(up_rot);
+        dash_z.position.applyQuaternion(left_rot);
+    }
     mouse_x = event.x;
     mouse_y = event.y;
    
@@ -423,7 +570,6 @@ function build_new_json_scene(results){
 function build_new_geometry(x,y,z, radius)
         {// function to build a geomtry and return the mesh
             var final_geometry = new THREE.Geometry();
-            disp(x)
             for (i=0; i<x.length; i++)
             {// loop over all molecules and add them to the geometry
                 
