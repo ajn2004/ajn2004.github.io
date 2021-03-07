@@ -231,9 +231,9 @@ function cameraRotation(event){
     up_rot.w = Math.cos(angle/2);
     camera.quaternion.multiply(up_rot);
     camera.quaternion.normalize();
-    //camera.left.multiply(up_rot)
-    //camera.view.multiply(up_rot)
-    //camera.up_q.multiply(up_rot)
+    camera.left.multiply(up_rot)
+    camera.view.multiply(up_rot)
+    camera.up_q.multiply(up_rot)
     camera.left.normalize();
     camera.view.normalize();
     camera.up_q.normalize();
@@ -247,9 +247,9 @@ function cameraRotation(event){
     
     camera.quaternion.multiply(left_rot);
     camera.quaternion.normalize();
-    //camera.left.multiply(left_rot)
-    //camera.view.multiply(left_rot)
-    //camera.up_q.multiply(left_rot)
+    camera.left.multiply(left_rot)
+    camera.view.multiply(left_rot)
+    camera.up_q.multiply(left_rot)
     camera.left.normalize();
     camera.view.normalize();
     camera.up_q.normalize();
@@ -275,9 +275,9 @@ function objectRotation(event){
     var up_vec = new THREE.Vector3();
     
 
-    up_rot.x = camera.up_q.x*Math.sin(angle/2);
-    up_rot.y = camera.up_q.y*Math.sin(angle/2);
-    up_rot.z = camera.up_q.z*Math.sin(angle/2);
+    up_rot.x = camera.view.x*Math.sin(angle/2);
+    up_rot.y = camera.view.y*Math.sin(angle/2);
+    up_rot.z = camera.view.z*Math.sin(angle/2);
     up_rot.w = Math.cos(angle/2);
     red_mesh.quaternion.multiply(up_rot);
     orange_mesh.quaternion.multiply(up_rot);
