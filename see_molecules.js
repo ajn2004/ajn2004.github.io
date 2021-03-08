@@ -220,12 +220,49 @@ function ctrl_keycodes(event){// behavior for ctrl modified keys
 function keycodes(event){// Behavior for non modified keys
     var a = new THREE.Euler(camera.rotation.x,camera.rotation.y,camera.rotation.z,'XYZ');
     var step_size = 0.05;
+    var b = new THREE.Vector3()
     if ( event.keyCode == 87){
         // Moving 'forward'
         var b = new THREE.Vector3(0, 0, -step_size); // step 'along -zprime'
         movement = b.applyEuler(a);
         
         update_position(movement);
+        
+    } else if (event.keyCode == 107){
+        // forward thruster
+        step_size = 0.01 
+        b.z = -step_size; // step 'along -zprime'
+         camera.velocity.add(b.applyEuler(a));
+         
+    } else if(event.keyCode == 13){
+        // upward thruster
+        step_size = 0.01
+        b.z = step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    }else if(event.keyCode == 104){
+        // upward thruster
+        step_size = 0.01
+        b.y = step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 98){
+        // downward thruster
+        step_size = 0.01
+        b.y = -step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    }else if(event.keyCode == 100){
+        // upward thruster
+        step_size = 0.01
+        b.x = -step_size;
+        camera.velocity.add(b.applyEuler(a));
+        
+    } else if(event.keyCode == 102){
+        // downward thruster
+        step_size = 0.01
+        b.x = step_size;
+        camera.velocity.add(b.applyEuler(a));
         
     } else if ( event.keyCode == 83){
         // Moving 'backward'
