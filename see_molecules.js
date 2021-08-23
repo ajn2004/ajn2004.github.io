@@ -610,7 +610,7 @@ function build_new_geometry(x,y,z, radius)
             for (i=0; i<x.length; i++)
             {// loop over all molecules and add them to the geometry
                 
-                var geometry = new THREE.SphereGeometry( radius,);
+                var geometry = new THREE.SphereGeometry( radius);
             //var material = new THREE.MeshLambertMaterial({color : 0xFFCC00});
             var mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(x[i], y[i], z[i]);
